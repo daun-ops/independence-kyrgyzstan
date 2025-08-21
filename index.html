@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>С Днем Независимости Кыргызстана</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(50px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeInUp {
+      animation: fadeInUp 2s ease forwards;
+    }
+    @keyframes scaleIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-scaleIn {
+      animation: scaleIn 2s ease forwards;
+    }
+    body {
+      background: url('https://upload.wikimedia.org/wikipedia/commons/c/c7/Flag_of_Kyrgyzstan.svg') no-repeat center center fixed;
+      background-size: cover;
+      animation: flagWave 10s infinite linear;
+      overflow: hidden;
+    }
+    @keyframes flagWave {
+      0% { background-position: center top; }
+      50% { background-position: center center; }
+      100% { background-position: center top; }
+    }
+    /* Конфетти */
+    .confetti {
+      position: fixed;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      opacity: 0.8;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(360deg); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center h-screen bg-red-700 bg-opacity-80 relative">
+  <!-- Аудио (традиционная музыка Кыргызстана, примерная ссылка) -->
+  <audio id="bg-music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2023/03/15/audio_7fa7ab2c50.mp3?filename=epic-ethnic-141611.mp3" type="audio/mpeg">
+    Ваш браузер не поддерживает аудио.
+  </audio>
+
+  <!-- Конфетти контейнер -->
+  <div id="confetti-container"></div>
+
+  <div class="text-center p-4 bg-black bg-opacity-50 rounded-2xl z-10">
+    <h1 class="text-white text-3xl md:text-6xl font-extrabold drop-shadow-lg animate-fadeInUp">
+      С ДНЕМ НЕЗАВИСИМОСТИ
+    </h1>
+    <h2 class="text-white text-2xl md:text-5xl font-bold mt-4 animate-scaleIn">
+      КЫРГЫЗСТАНА 🇰🇬
+    </h2>
+   
+  </div>
+
+  <script>
+    function createConfetti() {
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti');
+      confetti.style.left = Math.random() * 100 + 'vw';
+      confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      document.getElementById('confetti-container').appendChild(confetti);
+      setTimeout(() => confetti.remove(), 5000);
+    }
+    setInterval(createConfetti, 200);
+
+    // Воспроизведение музыки при первом скролле
+    let musicPlayed = false;
+    window.addEventListener('scroll', () => {
+      if (!musicPlayed) {
+        document.getElementById('bg-music').play();
+        musicPlayed = true;
+      }
+    });
+  </script>
+</body>
+</html>
