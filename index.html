@@ -73,23 +73,26 @@
   </div>
 
   <script>
-    // Музыка
-    const music = new Audio("https://cdn.pixabay.com/audio/2023/02/28/audio_6c3c0a2c7b.mp3");
+    // Музыка с прямой ссылкой
+    const music = new Audio("https://cdn.pixabay.com/download/audio/2023/02/28/audio_6c3c0a2c7b.mp3?filename=ethnic-music.mp3");
     music.loop = true;
     let isPlaying = false;
+    let fireworkInterval;
 
     function toggleMusic() {
       if (isPlaying) {
         music.pause();
+        clearInterval(fireworkInterval);
         document.getElementById('music-btn').innerText = '▶ Включить музыку';
       } else {
         music.play().then(() => {
           document.getElementById('music-btn').innerText = '⏸ Остановить музыку';
           if (navigator.vibrate) navigator.vibrate(200);
           createFirework(); // запуск салюта при старте
+          fireworkInterval = setInterval(createFirework, 4000); // каждые 4 секунды новый салют
         }).catch(err => {
           console.log("Ошибка воспроизведения:", err);
-          alert("Музыка не смогла запуститься. Попробуйте снова нажать.");
+          alert("⚠ Музыка не смогла запуститься. Попробуйте ещё раз нажать кнопку.");
         });
       }
       isPlaying = !isPlaying;
