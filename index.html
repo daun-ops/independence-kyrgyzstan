@@ -31,6 +31,11 @@
       padding: 1rem;
       background: rgba(0,0,0,0.4);
       border-radius: 1rem;
+      animation: glow 2.5s infinite alternate;
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 0 0 20px rgba(255, 0, 0, 0.6); }
+      to { box-shadow: 0 0 25px rgba(255, 255, 0, 1), 0 0 50px rgba(255, 0, 0, 0.9); }
     }
     .confetti {
       position: fixed;
@@ -67,35 +72,34 @@
     <h2 class="text-2xl md:text-4xl mt-4 animate-scaleIn">
       КЫРГЫЗСТАНА 🇰🇬
     </h2>
-    <button id="music-btn" onclick="toggleMusic()" class="mt-6 px-6 py-3 bg-yellow-400 text-red-700 font-bold rounded-xl shadow-lg hover:bg-yellow-300 transition animate-bounce">
-      ▶ Включить музыку
-    </button>
+    <p class="mt-6 text-lg md:text-xl italic">начать праздник 🎉</p>
   </div>
 
   <script>
-    // Музыка с прямой ссылкой
-    const music = new Audio("https://cdn.pixabay.com/download/audio/2023/02/28/audio_6c3c0a2c7b.mp3?filename=ethnic-music.mp3");
-    music.loop = true;
-    let isPlaying = false;
+    // Звуки фанфар + салют
+    const fanfare = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_92f58690c0.mp3?filename=trumpet-fanfare-6960.mp3");
+    const fireworkSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_b99d9b76a1.mp3?filename=firework-explosion-6962.mp3");
+    fanfare.volume = 0.6;
+    fireworkSound.volume = 0.6;
+
+    let started = false;
     let fireworkInterval;
 
-    function toggleMusic() {
-      if (isPlaying) {
-        music.pause();
-        clearInterval(fireworkInterval);
-        document.getElementById('music-btn').innerText = '▶ Включить музыку';
-      } else {
-        music.play().then(() => {
-          document.getElementById('music-btn').innerText = '⏸ Остановить музыку';
-          if (navigator.vibrate) navigator.vibrate(200);
-          createFirework(); // запуск салюта при старте
-          fireworkInterval = setInterval(createFirework, 4000); // каждые 4 секунды новый салют
-        }).catch(err => {
-          console.log("Ошибка воспроизведения:", err);
-          alert("⚠ Музыка не смогла запуститься. Попробуйте ещё раз нажать кнопку.");
-        });
+    document.body.addEventListener('click', startCelebration, { once: true });
+    document.body.addEventListener('touchstart', startCelebration, { once: true });
+
+    function startCelebration() {
+      if (!started) {
+        fanfare.play().catch(err => console.log("Ошибка звука:", err));
+        createFirework();
+        fireworkSound.play().catch(err => console.log("Ошибка звука:", err));
+        fireworkInterval = setInterval(() => {
+          createFirework();
+          fireworkSound.currentTime = 0;
+          fireworkSound.play().catch(()=>{});
+        }, 4000);
+        started = true;
       }
-      isPlaying = !isPlaying;
     }
 
     // Конфетти
