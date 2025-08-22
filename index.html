@@ -72,7 +72,9 @@
     <h2 class="text-2xl md:text-4xl mt-4 animate-scaleIn">
       КЫРГЫЗСТАНА 🇰🇬
     </h2>
-    <p class="mt-6 text-lg md:text-xl italic">начать праздник 🎉</p>
+    <p id="startBtn" class="mt-6 text-lg md:text-xl italic cursor-pointer underline">
+      начать праздник 🎉
+    </p>
   </div>
 
   <script>
@@ -85,21 +87,29 @@
     let started = false;
     let fireworkInterval;
 
-    document.body.addEventListener('click', startCelebration, { once: true });
-    document.body.addEventListener('touchstart', startCelebration, { once: true });
+    const startBtn = document.getElementById('startBtn');
+    startBtn.addEventListener('click', startCelebration, { once: true });
+    startBtn.addEventListener('touchstart', startCelebration, { once: true });
 
     function startCelebration() {
       if (!started) {
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        // убираем кнопку
+        startBtn.style.display = "none";
+
+        // фанфары + первый салют
         fanfare.play().catch(err => console.log("Ошибка звука:", err));
         createFirework();
         fireworkSound.play().catch(err => console.log("Ошибка звука:", err));
+        navigator.vibrate?.([200, 100, 200]); // вибрация при старте
+
+        // цикличный салют
         fireworkInterval = setInterval(() => {
           createFirework();
+          navigator.vibrate?.(100);
           fireworkSound.currentTime = 0;
           fireworkSound.play().catch(()=>{});
-          if (navigator.vibrate) navigator.vibrate(100);
         }, 4000);
+
         started = true;
       }
     }
