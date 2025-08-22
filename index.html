@@ -72,15 +72,17 @@
     <h2 class="text-2xl md:text-4xl mt-4 animate-scaleIn">
       КЫРГЫЗСТАНА 🇰🇬
     </h2>
-    <p id="startBtn" class="mt-6 text-lg md:text-xl italic cursor-pointer underline">
+    <button id="startBtn" type="button" aria-label="Начать праздник" class="mt-6 text-lg md:text-xl italic underline cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-300 rounded px-2 bg-transparent">
       начать праздник 🎉
-    </p>
+    </button>
   </div>
 
   <script>
     // Звуки фанфар + салют
     const fanfare = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_92f58690c0.mp3?filename=trumpet-fanfare-6960.mp3");
     const fireworkSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_b99d9b76a1.mp3?filename=firework-explosion-6962.mp3");
+    fanfare.preload = "auto"; fanfare.load();
+    fireworkSound.preload = "auto"; fireworkSound.load();
     fanfare.volume = 0.6;
     fireworkSound.volume = 0.6;
 
@@ -88,30 +90,41 @@
     let fireworkInterval;
 
     const startBtn = document.getElementById('startBtn');
-    startBtn.addEventListener('click', startCelebration, { once: true });
-    startBtn.addEventListener('touchstart', startCelebration, { once: true });
+    if (startBtn) {
+      // Используем pointerup для надёжной работы на телефонах и компьютерах
+      startBtn.addEventListener('pointerup', startCelebration, { once: true });
+      // Поддержка клавиатуры (Enter/Space)
+      startBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          startCelebration();
+        }
+      }, { once: true });
+    }
 
     function startCelebration() {
-      if (!started) {
-        // убираем кнопку
-        startBtn.style.display = "none";
+      if (started) return;
+      started = true; // фиксируем старт, чтобы не было двойных вызовов
 
-        // фанфары + первый салют
-        fanfare.play().catch(err => console.log("Ошибка звука:", err));
-        createFirework();
-        fireworkSound.play().catch(err => console.log("Ошибка звука:", err));
-        navigator.vibrate?.([200, 100, 200]); // вибрация при старте
-
-        // цикличный салют
-        fireworkInterval = setInterval(() => {
-          createFirework();
-          navigator.vibrate?.(100);
-          fireworkSound.currentTime = 0;
-          fireworkSound.play().catch(()=>{});
-        }, 4000);
-
-        started = true;
+      // Мгновенная визуальная обратная связь
+      if (navigator.vibrate) { try { navigator.vibrate([200, 100, 200]); } catch(_) {} }
+      // Плавно скрываем кнопку
+      if (startBtn) {
+        startBtn.classList.add('opacity-0', 'transition', 'duration-500');
+        setTimeout(() => { startBtn.style.display = 'none'; }, 600);
       }
+
+      // Звук и салют
+      try { fanfare.currentTime = 0; fanfare.play().catch(()=>{}); } catch(_) {}
+      createFirework(); // первый салют сразу, чтобы пользователь увидел эффект
+      try { fireworkSound.currentTime = 0; fireworkSound.play().catch(()=>{}); } catch(_) {}
+
+      // Цикличные салюты
+      fireworkInterval = setInterval(() => {
+        createFirework();
+        if (navigator.vibrate) { try { navigator.vibrate(100); } catch(_) {} }
+        try { fireworkSound.currentTime = 0; fireworkSound.play().catch(()=>{}); } catch(_) {}
+      }, 4000);
     }
 
     // Конфетти
