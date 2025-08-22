@@ -90,6 +90,7 @@
 
     function startCelebration() {
       if (!started) {
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
         fanfare.play().catch(err => console.log("Ошибка звука:", err));
         createFirework();
         fireworkSound.play().catch(err => console.log("Ошибка звука:", err));
@@ -97,6 +98,7 @@
           createFirework();
           fireworkSound.currentTime = 0;
           fireworkSound.play().catch(()=>{});
+          if (navigator.vibrate) navigator.vibrate(100);
         }, 4000);
         started = true;
       }
