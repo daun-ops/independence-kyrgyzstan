@@ -56,7 +56,7 @@
       z-index: 0;
       transform-origin: left center;
       filter: saturate(1.05) brightness(1.03);
-      animation: flagWave 6s ease-in-out infinite;
+      animation: none !important;
       /* создаем отдельный композитный слой для предотвращения мерцаний на мобильных */
       backface-visibility: hidden;
       transform: translateZ(0);
@@ -77,7 +77,7 @@
       background-size: 160px 100%;
       mix-blend-mode: overlay;
       pointer-events: none;
-      animation: waveLight 3s linear infinite;
+      animation: none !important;
       opacity: 0.55;
     }
     @keyframes flagWave {
