@@ -188,9 +188,9 @@
       .text-container h1 { font-size: 1.6rem; }
       .text-container h2 { font-size: 1.1rem; }
       .cta-btn { padding: 0.8rem 1.2rem; font-size: 1rem; }
-      /* На маленьких экранах используем ещё более мягкое "развевание" */
-      .flag { animation: flagWaveLite 14s ease-in-out infinite; }
-      .flag::after { animation: waveLight 12s linear infinite; opacity: 0.15; }
+      /* На маленьких экранах отключаем анимацию фона с флагом */
+      .flag { animation: none !important; }
+      .flag::after { animation: none !important; opacity: 0.15; }
     }
     /* Стиль для кнопки-призыва к действию */
     .cta-btn {
@@ -287,10 +287,10 @@
     fireworkSound.volume = isSmallScreen ? 0.45 : 0.6;
     // Палитра цветов частиц фейерверка (можно менять под вкус)
     const FIREWORK_COLORS = [
-      '#0d4eb8',
-      '#730d69',
-      '#730d69',
-      '#730d69'
+      '#0b20de',
+      '#db0b1c',
+      '#f05a0a',
+      '#f05a0a'
     ];
 
     let started = false;
