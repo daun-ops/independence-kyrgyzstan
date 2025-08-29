@@ -40,6 +40,11 @@
       background: rgba(0,0,0,0.4);
       z-index: 1;
     }
+    /* Плавно скрываем overlay на старте вместо трансформаций (уменьшает мерцание на мобиле) */
+    .overlay-fadeout {
+      opacity: 0;
+      transition: opacity 400ms ease;
+    }
     /* Слой флага с анимацией «развевания» */
     .flag {
       position: fixed; inset: 0;
@@ -52,6 +57,10 @@
       transform-origin: left center;
       filter: saturate(1.05) brightness(1.03);
       animation: flagWave 6s ease-in-out infinite;
+      /* создаем отдельный композитный слой для предотвращения мерцаний на мобильных */
+      backface-visibility: hidden;
+      transform: translateZ(0);
+      will-change: transform;
     }
     .flag::after {
       content: "";
@@ -76,9 +85,21 @@
       50%  { transform: perspective(900px) rotateY(-2deg)  skewY(-1.2deg) scaleY(1.02) translateX(-6px); }
       100% { transform: perspective(900px) rotateY(0.8deg) skewY(0.6deg) scaleY(1.00); }
     }
+    /* Облегченная версия анимации флага для смартфонов */
+    @keyframes flagWaveLite {
+      0%   { transform: perspective(900px) rotateY(0.2deg) skewY(0.2deg) scaleY(1.00); }
+      50%  { transform: perspective(900px) rotateY(-0.6deg) skewY(-0.4deg) scaleY(1.01) translateX(-2px); }
+      100% { transform: perspective(900px) rotateY(0.2deg) skewY(0.2deg) scaleY(1.00); }
+    }
     @keyframes waveLight {
       from { background-position: 0 0; }
       to   { background-position: 320px 0; }
+    }
+    /* Учет системных настроек уменьшения анимации */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+      .flag { animation: none !important; }
+      .flag::after { animation: none !important; }
     }
     .text-container {
       text-align: center;
@@ -167,7 +188,9 @@
       .text-container h1 { font-size: 1.6rem; }
       .text-container h2 { font-size: 1.1rem; }
       .cta-btn { padding: 0.8rem 1.2rem; font-size: 1rem; }
-      .flag::after { opacity: 0.35; }
+      /* На маленьких экранах используем щадящее "развевание" */
+      .flag { animation: flagWaveLite 10s ease-in-out infinite; }
+      .flag::after { animation: waveLight 8s linear infinite; opacity: 0.2; }
     }
     /* Стиль для кнопки-призыва к действию */
     .cta-btn {
@@ -193,6 +216,7 @@
       cursor: pointer;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .cta-btn:hover {
       transform: translateY(-1px);
@@ -300,11 +324,11 @@
         try { fireworkSound.currentTime = 0; fireworkSound.play().catch(()=>{}); } catch(_) {}
       }, isSmallScreen ? 6000 : 4000);
 
-      // Подготовить элементы к разлёту: текстовый блок, персонаж, затемнить оверлей
+      // Подготовить элементы к разлёту: текстовый блок и кнопка (overlay не трансформируем — только плавно скрываем)
       const toDisperse = [];
       const textBlock = document.querySelector('.text-container'); if (textBlock) toDisperse.push(textBlock);
       // Персонажа НЕ разлетаем — он появится после клика
-      const overlay = document.querySelector('.overlay'); if (overlay) toDisperse.push(overlay);
+      const overlay = document.querySelector('.overlay');
       if (startBtn) toDisperse.push(startBtn);
 
       toDisperse.forEach((el, idx) => {
@@ -319,6 +343,19 @@
         el.style.setProperty('--rz', rz);
         el.classList.add('disperse');
       });
+
+      // Плавно скрыть overlay без трансформаций (борьба с мерцанием фиксированных слоёв)
+      if (overlay) {
+        // Форсим reflow через rAF, чтобы transition сработал стабильно на мобиле
+        requestAnimationFrame(() => {
+          overlay.classList.add('overlay-fadeout');
+          // Удалить после завершения перехода
+          const removeOverlay = () => { try { overlay.remove(); } catch(_) {} };
+          overlay.addEventListener('transitionend', removeOverlay, { once: true });
+          // Фолбэк-таймер на случай, если событие не сработает
+          setTimeout(removeOverlay, 550);
+        });
+      }
 
       // После анимации — удалить элементы интерфейса, затем показать персонажа по центру (появится и исчезнет)
       setTimeout(() => {
