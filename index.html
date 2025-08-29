@@ -87,9 +87,9 @@
     }
     /* Облегченная версия анимации флага для смартфонов */
     @keyframes flagWaveLite {
-      0%   { transform: perspective(900px) rotateY(0.2deg) skewY(0.2deg) scaleY(1.00); }
-      50%  { transform: perspective(900px) rotateY(-0.6deg) skewY(-0.4deg) scaleY(1.01) translateX(-2px); }
-      100% { transform: perspective(900px) rotateY(0.2deg) skewY(0.2deg) scaleY(1.00); }
+      0%   { transform: perspective(900px) rotateY(0.12deg) skewY(0.10deg) scaleY(1.00); }
+      50%  { transform: perspective(900px) rotateY(-0.24deg) skewY(-0.16deg) scaleY(1.005); }
+      100% { transform: perspective(900px) rotateY(0.12deg) skewY(0.10deg) scaleY(1.00); }
     }
     @keyframes waveLight {
       from { background-position: 0 0; }
@@ -188,9 +188,9 @@
       .text-container h1 { font-size: 1.6rem; }
       .text-container h2 { font-size: 1.1rem; }
       .cta-btn { padding: 0.8rem 1.2rem; font-size: 1rem; }
-      /* На маленьких экранах используем щадящее "развевание" */
-      .flag { animation: flagWaveLite 10s ease-in-out infinite; }
-      .flag::after { animation: waveLight 8s linear infinite; opacity: 0.2; }
+      /* На маленьких экранах используем ещё более мягкое "развевание" */
+      .flag { animation: flagWaveLite 14s ease-in-out infinite; }
+      .flag::after { animation: waveLight 12s linear infinite; opacity: 0.15; }
     }
     /* Стиль для кнопки-призыва к действию */
     .cta-btn {
@@ -285,6 +285,13 @@
     fireworkSound.preload = "auto"; fireworkSound.load();
     fanfare.volume = isSmallScreen ? 0.45 : 0.6;
     fireworkSound.volume = isSmallScreen ? 0.45 : 0.6;
+    // Палитра цветов частиц фейерверка (можно менять под вкус)
+    const FIREWORK_COLORS = [
+      '#0d4eb8',
+      '#730d69',
+      '#730d69',
+      '#730d69'
+    ];
 
     let started = false;
     let fireworkInterval;
@@ -396,7 +403,7 @@
         firework.classList.add('firework');
         firework.style.left = x + 'px';
         firework.style.top = y + 'px';
-        firework.style.background = ['yellow','red','white'][Math.floor(Math.random()*3)];
+        firework.style.background = FIREWORK_COLORS[Math.floor(Math.random()*FIREWORK_COLORS.length)];
 
         const angle = Math.random() * 2 * Math.PI;
         const radius = Math.random() * radiusMax;
